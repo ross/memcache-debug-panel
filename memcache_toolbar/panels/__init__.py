@@ -1,4 +1,6 @@
 from datetime import datetime
+from debug_toolbar.panels import DebugPanel
+from django.template.loader import render_to_string
 import logging
 
 # TODO:
@@ -7,13 +9,32 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class Calls:
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self._calls = []
+
+    def append(self, call):
+        self._calls.append(call)
+
+    def calls(self):
+        return self._calls
+
+    def size(self):
+        return len(self._calls)
+
+    def last(self):
+        return self._calls[-1]
+
 # NOTE this is not even close to thread-safe/aware
-calls = []
+instance = Calls()
 
 def record(func):
     def recorder(*args, **kwargs):
         call = {'function': func.__name__, 'args': None, 'exception': False}
-        calls.append(call)
+        instance.append(call)
         # the try here is just being extra safe, it should not happen
         try:
             a = None
@@ -196,3 +217,44 @@ try:
 
 except:
     logger.debug('unable to install pylibmc.Client with tracking')
+
+class MemcachePanel(DebugPanel):
+    name = 'Memcache'
+    has_content = True
+
+    def process_request(self, request):
+        instance.reset()
+
+    def nav_title(self):
+        return 'Memcache'
+
+    def nav_subtitle(self):
+        duration = 0
+        calls = instance.calls()
+        for call in calls:
+            duration += call['duration']
+        n = len(calls)
+        if (n > 0):
+            return "%d calls, %0.2fms" % (n, duration)
+        else:
+            return "0 calls"
+
+    def title(self):
+        return 'Memcache Calls'
+
+    def url(self):
+        return ''
+
+    def content(self):
+        duration = 0
+        for call in calls:
+            duration += call['duration']
+
+        context = self.context.copy()
+        context.update({
+            'calls': calls,
+            'duration': duration,
+        })
+
+        return render_to_string('memcached_toolbar/panels/memcached.html',
+                context)
