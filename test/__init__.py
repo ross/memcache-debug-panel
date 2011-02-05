@@ -17,10 +17,19 @@ class TestPyLibMc(unittest.TestCase):
                 (expected_function, call['function']))
         self.assertEquals(call['args'], expected_args, base_message + 
                 ', args mis-match: %s != %s' % (expected_args, call['args']))
+        self.assertTrue('start' in call, base_message + ', start missing')
+        self.assertTrue('duration' in call, base_message + ', duration missing')
 
     def assertLastCall(self, expected_function, expected_args, base_message):
         self.assertCall(memcache_toolbar.panels.calls[-1], expected_function,
                 expected_args, base_message)
+
+    def assertLastCallRaised(self, expected_function, expected_args,
+            base_message):
+        call = memcache_toolbar.panels.calls[-1]
+        self.assertCall(call, expected_function, expected_args, base_message)
+        self.assertTrue('exception' in call, base_message + 
+                ', did not throw an exception')
 
     def test_basic(self):
         client = pylibmc.Client(['127.0.0.1'], binary=True)
@@ -58,7 +67,7 @@ class TestPyLibMc(unittest.TestCase):
         non_existent = 'non-existent'
         self.assertRaises(pylibmc.NotFound, client.replace, non_existent,
                 value) # 'simple replace, non-existent raises'
-        self.assertLastCall('replace', non_existent, 
+        self.assertLastCallRaised('replace', non_existent, 
                 'simple replace, non-existent')
         # append
         self.assertTrue(client.append(key, value), 'simple append')
@@ -75,7 +84,8 @@ class TestPyLibMc(unittest.TestCase):
         incr = 'incr'
         self.assertRaises(pylibmc.NotFound, client.incr, non_existent)
                 # , 'simple incr, non-existent')
-        self.assertLastCall('incr', non_existent, 'simple incr, non-existent')
+        self.assertLastCallRaised('incr', non_existent, 
+                'simple incr, non-existent')
         count = 0
         self.assertTrue(client.set(incr, count), 'set initial incr')
         self.assertLastCall('set', incr, 'set initial incr')
@@ -85,7 +95,8 @@ class TestPyLibMc(unittest.TestCase):
         # decr
         self.assertRaises(pylibmc.NotFound, client.decr, non_existent)
                 # , 'simple decr, non-existent')
-        self.assertLastCall('decr', non_existent, 'simple decr, non-existent')
+        self.assertLastCallRaised('decr', non_existent, 
+                'simple decr, non-existent')
         count -= 1
         self.assertEquals(client.decr(incr), count, 'simple decr')
         self.assertLastCall('decr', incr, 'simple decr')

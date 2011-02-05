@@ -1,5 +1,4 @@
 from datetime import datetime
-from pprint import pprint
 import logging
 
 # TODO:
@@ -13,14 +12,36 @@ calls = []
 
 def record(func):
     def recorder(*args, **kwargs):
-        a = None
-        #pprint({'args': args})
-        if len(args) > 1:
-            a = args[1]
-            if isinstance(a, dict):
-                a = a.keys()
-        calls.append({'function': func.__name__, 'args': a})
-        return func(*args, **kwargs)
+        call = {'function': func.__name__, 'args': None, 'exception': False}
+        calls.append(call)
+        # the try here is just being extra safe, it should not happen
+        try:
+            a = None
+            # first arg is self, do we have another
+            if len(args) > 1:
+                a = args[1]
+                # is it a dictionary (most likely multi)
+                if isinstance(a, dict):
+                    # just use it's keys
+                    a = a.keys()
+            # store the args
+            call['args'] = a
+        except e:
+            logger.exception('tracking of call args failed')
+            pass
+        ret = None
+        try:
+            # the clock starts now
+            call['start'] = datetime.now()
+            ret = func(*args, **kwargs)
+        except:
+            call['exception'] = True
+            raise
+        finally:
+            # the clock stops now
+            dur = datetime.now() - call['start']
+            call['duration'] = (dur.seconds * 1000) + (dur.microseconds / 1000.0)
+        return ret
     return recorder
 
 try:
