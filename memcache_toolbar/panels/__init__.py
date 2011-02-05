@@ -2,6 +2,10 @@ from datetime import datetime
 from pprint import pprint
 import logging
 
+# TODO:
+# - work thought various clients based on perf in
+#   http://amix.dk/blog/post/19471
+
 logger = logging.getLogger(__name__)
 
 # NOTE this is not even close to thread-safe/aware
