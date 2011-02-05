@@ -4,6 +4,21 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# NOTE this is not even close to thread-safe/aware
+calls = []
+
+def record(func):
+    def recorder(*args, **kwargs):
+        a = None
+        #pprint({'args': args})
+        if len(args) > 1:
+            a = args[1]
+            if isinstance(a, dict):
+                a = a.keys()
+        calls.append({'function': func.__name__, 'args': a})
+        return func(*args, **kwargs)
+    return recorder
+
 try:
     import pylibmc
     import _pylibmc
@@ -93,46 +108,64 @@ try:
 
         # methods we're adding tracking to
 
+        @record
         def get(self, *args, **kwargs):
             return _pylibmc.client.get(self, *args, **kwargs)
 
+        @record
         def get_multi(self, *args, **kwargs):
             return _pylibmc.client.get_multi(self, *args, **kwargs)
 
+        @record
         def set(self, *args, **kwargs):
             return _pylibmc.client.set(self, *args, **kwargs)
 
+        @record
         def set_multi(self, *args, **kwargs):
             return _pylibmc.client.set_multi(self, *args, **kwargs)
 
+        @record
         def add(self, *args, **kwargs):
             return _pylibmc.client.add(self, *args, **kwargs)
 
+        @record
         def replace(self, *args, **kwargs):
             return _pylibmc.client.replace(self, *args, **kwargs)
 
+        @record
         def append(self, *args, **kwargs):
             return _pylibmc.client.append(self, *args, **kwargs)
 
+        @record
         def prepend(self, *args, **kwargs):
             return _pylibmc.client.prepend(self, *args, **kwargs)
 
+        @record
         def incr(self, *args, **kwargs):
             return _pylibmc.client.incr(self, *args, **kwargs)
 
+        @record
         def decr(self, *args, **kwargs):
             return _pylibmc.client.decr(self, *args, **kwargs)
 
+        @record
         def delete(self, *args, **kwargs):
             return _pylibmc.client.delete(self, *args, **kwargs)
 
+        # NOTE delete_multi is implemented by iterative over args calling delete
+        # for each one. i could probably hide that here, but i actually think
+        # it's best to show it since each one will be a seperate network
+        # round-trip.
+        @record
         def delete_multi(self, *args, **kwargs):
             return _pylibmc.client.delete_multi(self, *args, **kwargs)
 
+        @record
         def flush_all(self, *args, **kwargs):
             return _pylibmc.client.flush_all(self, *args, **kwargs)
 
-    if pylibmc.Client.__name__ == 'Client':
+    # NOTE issubclass is true of both are the same class
+    if not issubclass(pylibmc.Client, TrackingClient):
         logger.debug('installing pylibmc.Client with tracking')
         pylibmc.Client = TrackingClient
 
