@@ -49,7 +49,6 @@ def record(func):
             call['args'] = a
         except e:
             logger.exception('tracking of call args failed')
-            pass
         ret = None
         try:
             # the clock starts now
@@ -247,6 +246,7 @@ class MemcachePanel(DebugPanel):
 
     def content(self):
         duration = 0
+        calls = instance.calls()
         for call in calls:
             duration += call['duration']
 
@@ -256,5 +256,5 @@ class MemcachePanel(DebugPanel):
             'duration': duration,
         })
 
-        return render_to_string('memcached_toolbar/panels/memcached.html',
+        return render_to_string('memcache_toolbar/panels/memcache.html',
                 context)
