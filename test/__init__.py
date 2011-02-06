@@ -34,6 +34,8 @@ class TestCase(unittest.TestCase):
 class TestPyLibMc(TestCase):
 
     def test_basic(self):
+        memcache_toolbar.panels.memcache.instance.reset()
+
         client = pylibmc.Client(['127.0.0.1'], binary=True)
         client.behaviors = {'tcp_nodelay': True, 'ketama': True}
 
@@ -143,6 +145,8 @@ class TestPyLibMc(TestCase):
 class TestMemcache(TestCase):
 
     def test_basic(self):
+        memcache_toolbar.panels.memcache.instance.reset()
+
         client = memcache.Client(['127.0.0.1:11211'], debug=0)
 
         # flush_all, first so we're in a clean state
@@ -175,9 +179,10 @@ class TestMemcache(TestCase):
         self.assertTrue(client.replace(add, value), 'simple replace, exists')
         self.assertLastCall('replace', add, 'simple replace, exists')
         non_existent = 'non-existent'
-        self.assertRaises(pylibmc.NotFound, client.replace, non_existent,
-                value) # 'simple replace, non-existent raises'
-        self.assertLastCallRaised('replace', non_existent,
+        client.replace(non_existent, value)
+        self.assertFalse(client.replace(non_existent, value), 
+                'simple replace, non-existent fails')
+        self.assertLastCall('replace', non_existent,
                 'simple replace, non-existent')
         # append
         self.assertTrue(client.append(key, value), 'simple append')
@@ -192,10 +197,9 @@ class TestMemcache(TestCase):
         self.assertLastCall('prepend', empty, 'simple prepend, empty')
         # incr
         incr = 'incr'
-        self.assertRaises(pylibmc.NotFound, client.incr, non_existent)
-                # , 'simple incr, non-existent')
-        self.assertLastCallRaised('incr', non_existent,
+        self.assertFalse(client.incr(non_existent), 
                 'simple incr, non-existent')
+        self.assertLastCall('incr', non_existent, 'simple incr, non-existent')
         count = 0
         self.assertTrue(client.set(incr, count), 'set initial incr')
         self.assertLastCall('set', incr, 'set initial incr')
@@ -203,45 +207,34 @@ class TestMemcache(TestCase):
         self.assertEquals(client.incr(incr), count, 'simple incr')
         self.assertLastCall('incr', incr, 'simple incr')
         # decr
-        self.assertRaises(pylibmc.NotFound, client.decr, non_existent)
-                # , 'simple decr, non-existent')
-        self.assertLastCallRaised('decr', non_existent,
-                'simple decr, non-existent')
+        self.assertFalse(client.decr(non_existent), 'simple decr, non-existent')
+        self.assertLastCall('decr', non_existent, 'simple decr, non-existent')
         count -= 1
         self.assertEquals(client.decr(incr), count, 'simple decr')
         self.assertLastCall('decr', incr, 'simple decr')
         # delete
         self.assertTrue(client.delete(key), 'simple delete')
         self.assertLastCall('delete', key, 'simple delete')
-        self.assertFalse(client.delete(non_existent),
+        self.assertTrue(client.delete(non_existent),
                 'simple delete, non-existent')
         self.assertLastCall('delete', non_existent,
                 'simple delete, non-existent')
         # delete_multi (pylibmc implements this as foreach keys delete)
-        n = memcache_toolbar.panels.memcache.instance.size()
         self.assertTrue(client.delete_multi(multi_keys), 'delete_multi')
-        calls = memcache_toolbar.panels.memcache.instance.calls()
-        # before + num_keys + the delete_multi
-        self.assertEquals(n + len(multi_keys) + 1, len(calls),
-                'delete multi call count')
-        self.assertCall(calls[-4], 'delete_multi', multi_keys, 'delete_multi')
-        for i, key in enumerate(multi_keys):
-            self.assertCall(calls[-3 + i], 'delete', key,
-                    'delete_multi, subsequent delete %d' % i)
-
+        self.assertLastCall('delete_multi', multi_keys, 'delete_multi')
         # flush again, this time make sure it works
-        self.assertTrue(client.flush_all(), 'flush_all')
+        client.flush_all()
         self.assertLastCall('flush_all', None, 'flush_all')
         self.assertEquals(client.get(incr), None, 'flush worked')
         self.assertLastCall('get', incr, 'flush worked')
 
-        self.assertEquals(26, memcache_toolbar.panels.memcache.instance.size(),
+        self.assertEquals(24, memcache_toolbar.panels.memcache.instance.size(),
                 'total number of calls')
 
         # test out the panel, mainly resetting
         panel = memcache_toolbar.panels.memcache.MemcachePanel()
         nav_subtitle = panel.nav_subtitle()
-        self.assertEquals(nav_subtitle[0:2], '26', 
+        self.assertEquals(nav_subtitle[0:2], '24', 
                 'memcache panel.nav_subtitle')
         # reset things
         panel.process_request(None)
