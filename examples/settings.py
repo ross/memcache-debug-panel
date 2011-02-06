@@ -66,7 +66,7 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.sql.SQLDebugPanel',
     'debug_toolbar.panels.signals.SignalDebugPanel',
     'debug_toolbar.panels.logger.LoggingPanel',
-    'memcache_toolbar.panels.memcache.MemcachePanel',
+    'memcache_toolbar.panels.pylibmc.PylibmcPanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
