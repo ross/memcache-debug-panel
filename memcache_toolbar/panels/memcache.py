@@ -7,6 +7,8 @@ import logging
 # - work thought various clients based on perf in
 #   http://amix.dk/blog/post/19471
 
+DEBUG = True
+
 logger = logging.getLogger(__name__)
 
 class Calls:
@@ -73,7 +75,7 @@ try:
     # resulting in a class that inherits from itself :( see
     # http://fuhm.net/super-harmful/ anyway, see the bottom of this class for
     # the methods we're installing tracking on
-    class TrackingClient(_pylibmc.client):
+    class TrackingPylibmcClient(_pylibmc.client):
         def __init__(self, servers, binary=False):
             """Initialize a memcached client instance.
 
@@ -210,12 +212,93 @@ try:
             return _pylibmc.client.flush_all(self, *args, **kwargs)
 
     # NOTE issubclass is true of both are the same class
-    if not issubclass(pylibmc.Client, TrackingClient):
+    if not issubclass(pylibmc.Client, TrackingPylibmcClient):
         logger.debug('installing pylibmc.Client with tracking')
-        pylibmc.Client = TrackingClient
+        pylibmc.Client = TrackingPylibmcClient
 
 except:
-    logger.debug('unable to install pylibmc.Client with tracking')
+    if DEBUG:
+        logger.exception('unable to install pylibmc.Client with tracking')
+    else:
+        logger.debug('unable to install pylibmc.Client with tracking')
+
+
+try:
+    import memcache
+
+    class TrackingMemcacheClient(memcache.Client):
+
+        @record
+        def flush_all(self, *args, **kwargs):
+            return memcache.Client.flush_all(self, *args, **kwargs)
+
+        @record
+        def delete_multi(self, *args, **kwargs):
+            return memcache.Client.delete_multi(self, *args, **kwargs)
+
+        @record
+        def delete(self, *args, **kwargs):
+            return memcache.Client.delete(self, *args, **kwargs)
+
+        @record
+        def incr(self, *args, **kwargs):
+            return memcache.Client.incr(self, *args, **kwargs)
+
+        @record
+        def decr(self, *args, **kwargs):
+            return memcache.Client.decr(self, *args, **kwargs)
+
+        @record
+        def add(self, *args, **kwargs):
+            return memcache.Client.add(self, *args, **kwargs)
+
+        @record
+        def append(self, *args, **kwargs):
+            return memcache.Client.append(self, *args, **kwargs)
+
+        @record
+        def prepend(self, *args, **kwargs):
+            return memcache.Client.prepend(self, *args, **kwargs)
+
+        @record
+        def replace(self, *args, **kwargs):
+            return memcache.Client.replace(self, *args, **kwargs)
+
+        @record
+        def set(self, *args, **kwargs):
+            return memcache.Client.set(self, *args, **kwargs)
+
+        @record
+        def cas(self, *args, **kwargs):
+            return memcache.Client.cas(self, *args, **kwargs)
+
+        @record
+        def set_multi(self, *args, **kwargs):
+            return memcache.Client.set_multi(self, *args, **kwargs)
+
+        @record
+        def get(self, *args, **kwargs):
+            return memcache.Client.get(self, *args, **kwargs)
+
+        @record
+        def gets(self, *args, **kwargs):
+            return memcache.Client.gets(self, *args, **kwargs)
+
+        @record
+        def get_multi(self, *args, **kwargs):
+            return memcache.Client.get_multi(self, *args, **kwargs)
+
+    # NOTE issubclass is true of both are the same class
+    if not issubclass(memcache.Client, TrackingMemcacheClient):
+        logger.debug('installing memcache.Client with tracking')
+        memcache.Client = TrackingMemcacheClient
+
+except:
+    if DEBUG:
+        logger.exception('unable to install memcache.Client with tracking')
+    else:
+        logger.debug('unable to install memcache.Client with tracking')
+
 
 class MemcachePanel(DebugPanel):
     name = 'Memcache'

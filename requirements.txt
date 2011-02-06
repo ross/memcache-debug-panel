@@ -1,2 +1,4 @@
 Django
 django-debug-toolbar
+pylibmc
+python-memcached
