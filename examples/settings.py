@@ -1,9 +1,14 @@
 # Django settings for examples project.
 
 import sys
+from os.path import dirname, join
 
 # add our parent directory to the path so that we can find memcache_toolbar
 sys.path.append('../')
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -38,7 +43,9 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'examples.urls'
 
-TEMPLATE_DIRS = ()
+TEMPLATE_DIRS = (
+        join(dirname(__file__), 'templates')
+)
 
 INSTALLED_APPS = (
     'django.contrib.contenttypes',
@@ -59,7 +66,7 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.sql.SQLDebugPanel',
     'debug_toolbar.panels.signals.SignalDebugPanel',
     'debug_toolbar.panels.logger.LoggingPanel',
-    'memcache_toolbar.panels.MemcachePanel',
+    'memcache_toolbar.panels.memcache.MemcachePanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {

@@ -1,0 +1,28 @@
+<h4>Calls:</h4>
+<h5>{{ count }} calls in {{ duration }}ms</h5>
+<table>
+    <thead>
+        <tr>
+            <th>Start Time</th>
+            <th>Duration (ms)</th>
+            <th>Call</th>
+            <th>Args</th>
+            <th>Exception</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for call in calls %}
+        <tr>
+            <td>{{ call.start|date:'H:i:s.u' }}</td>
+            <td>{{ call.duration }}</td>
+            <td>{{ call.function }}</td>
+            <td>{{ call.args }}</td>
+            <td>
+                {% if call.exception %}
+                {{ call.exception }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

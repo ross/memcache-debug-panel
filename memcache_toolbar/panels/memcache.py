@@ -54,8 +54,8 @@ def record(func):
             # the clock starts now
             call['start'] = datetime.now()
             ret = func(*args, **kwargs)
-        except:
-            call['exception'] = True
+        except Exception as e:
+            call['exception'] = e
             raise
         finally:
             # the clock stops now
@@ -253,6 +253,7 @@ class MemcachePanel(DebugPanel):
         context = self.context.copy()
         context.update({
             'calls': calls,
+            'count': len(calls),
             'duration': duration,
         })
 
