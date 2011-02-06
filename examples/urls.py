@@ -6,4 +6,5 @@ urlpatterns = patterns('django.views.generic.simple',
 
 urlpatterns += patterns('',
     url(r'^pylibmc/', include('examples.demo_pylibmc.urls')),
+    url(r'^memcache/', include('examples.demo_memcache.urls')),
 )

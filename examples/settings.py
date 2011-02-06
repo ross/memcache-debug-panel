@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'memcache_toolbar',
     # apps
     'demo_pylibmc',
+    'demo_memcache',
 )
 
 DEBUG_TOOLBAR_PANELS = (
@@ -67,6 +68,7 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.signals.SignalDebugPanel',
     'debug_toolbar.panels.logger.LoggingPanel',
     'memcache_toolbar.panels.pylibmc.PylibmcPanel',
+    'memcache_toolbar.panels.memcache.MemcachePanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
