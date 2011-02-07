@@ -1,14 +1,14 @@
 {% load i18n %}
-<h4>Calls:</h4>
-<h5>{{ count }} calls in {{ duration }}ms</h5>
+<h4>{% trans 'Calls:' %}</h4>
+<h5>{% blocktrans with count as count and duration as duration %}{{ count }} calls in {{ duration }}ms{% endblocktrans %}</h5>
 <table>
     <thead>
         <tr>
-            <th>Start Time</th>
-            <th>Duration (ms)</th>
-            <th>Call</th>
-            <th>Args</th>
-            <th>Actions</th>
+            <th>{% trans 'Start Time' %}</th>
+            <th>{% trans 'Duration (ms)' %}</th>
+            <th>{% trans 'Call' %}</th>
+            <th>{% trans 'Args' %}</th>
+            <th>{% trans 'Actions' %}</th>
         </tr>
     </thead>
     <tbody>
@@ -19,16 +19,13 @@
             <td>{{ call.function }}</td>
             <td>{{ call.args }}</td>
             <td>
-                <a class="djMemcacheShowStacktrace" href="#">Stacktrace</a>
-                {% if call.exception %}
-                {{ call.exception }}
-                {% endif %}
+                <a class="djMemcacheShowStacktrace" href="#">{% trans 'Stacktrace' %}</a>
             </td>
         </tr>
         <tr class='djMemcacheStacktrace' style='display:none;'>
             <td colspan=5>
                 {% if call.stacktrace %}
-                <div class="djMemcacheLHideStacktraceDiv">
+                <div class="djSQLHideStacktraceDiv">
                     <table>
                         <tr>
                             <th>{% trans "Line" %}</th>

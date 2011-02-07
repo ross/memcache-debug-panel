@@ -5,6 +5,7 @@ from datetime import datetime
 from debug_toolbar.panels import DebugPanel
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 from os.path import dirname, realpath
 import django
 import logging
@@ -55,7 +56,7 @@ def tidy_stacktrace(strace):
 def record(func):
     def recorder(*args, **kwargs):
         stacktrace = tidy_stacktrace(traceback.extract_stack())
-        call = {'function': func.__name__, 'args': None, 'exception': False,
+        call = {'function': func.__name__, 'args': None, 
                 'stacktrace': stacktrace}
         instance.append(call)
         # the try here is just being extra safe, it should not happen
@@ -77,9 +78,6 @@ def record(func):
             # the clock starts now
             call['start'] = datetime.now()
             ret = func(*args, **kwargs)
-        except Exception as e:
-            call['exception'] = e
-            raise
         finally:
             # the clock stops now
             dur = datetime.now() - call['start']
@@ -96,7 +94,7 @@ class BasePanel(DebugPanel):
         instance.reset()
 
     def nav_title(self):
-        return 'Memcache'
+        return _('Memcache')
 
     def nav_subtitle(self):
         duration = 0
@@ -110,7 +108,7 @@ class BasePanel(DebugPanel):
             return "0 calls"
 
     def title(self):
-        return 'Memcache Calls'
+        return _('Memcache Calls')
 
     def url(self):
         return ''
