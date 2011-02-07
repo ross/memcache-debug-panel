@@ -2,13 +2,17 @@
 
 import sys
 from os.path import dirname, join
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 # add our parent directory to the path so that we can find memcache_toolbar
 sys.path.append('../')
 
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
+# in order to track django's caching we need to import the panels code now
+# so that it can swap out the client with one that tracks usage.
+import memcache_toolbar.panels.memcache
+# if you're using pylibmc use the following instead
+#import memcache_toolbar.panels.pylibmc
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -23,6 +27,8 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
 TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en-us'
@@ -53,8 +59,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'memcache_toolbar',
     # apps
-    'demo_pylibmc',
-    'demo_memcache',
+    'demo',
 )
 
 DEBUG_TOOLBAR_PANELS = (
@@ -67,8 +72,9 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.sql.SQLDebugPanel',
     'debug_toolbar.panels.signals.SignalDebugPanel',
     'debug_toolbar.panels.logger.LoggingPanel',
-    'memcache_toolbar.panels.pylibmc.PylibmcPanel',
     'memcache_toolbar.panels.memcache.MemcachePanel',
+    # if you use pyibmc you'd include it's panel instead
+    #'memcache_toolbar.panels.pylibmc.PylibmcPanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
