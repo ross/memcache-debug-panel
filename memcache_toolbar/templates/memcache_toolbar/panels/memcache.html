@@ -1,3 +1,4 @@
+{% load i18n %}
 <h4>Calls:</h4>
 <h5>{{ count }} calls in {{ duration }}ms</h5>
 <table>
@@ -25,23 +26,36 @@
             </td>
         </tr>
         <tr class='djMemcacheStacktrace' style='display:none;'>
-            <td>
-            </td>
-            <td colspan=4>
-                <table>
-                    <tr>
-                        <th style='text-align:left'>File</th>
-                        <th style='text-align:left'>Line</th>
-                        <th style='text-align:left'>Function</th>
-                    </tr>
-                    {% for file, line, function in call.stacktrace %}
-                    <tr>
-                        <td><code>{{ file|escape }}</code></td>
-                        <td>{{ line }}</td>
-                        <td><code>{{ function|escape }}</code></td>
-                    </tr>
-                    {% endfor %}
-                </table>
+            <td colspan=5>
+                {% if call.stacktrace %}
+                <div class="djMemcacheLHideStacktraceDiv">
+                    <table>
+                        <tr>
+                            <th>{% trans "Line" %}</th>
+                            <th>{% trans "Method" %}</th>
+                            <th>{% trans "File" %}</th>
+                        </tr>
+                        {% for file, line, method in call.stacktrace %}
+                        <tr>
+                            <td>{{ line }}</td>
+                            <td><code>{{ method|escape }}</code></td>
+                            <td><code>{{ file|escape }}</code></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {% if call.template_info %}
+                    <table>
+                        {% for line in call.template_info.context %}
+                        <tr>
+                            <td>{{ line.num }}</td>
+                            <td><code style="font-family: monospace;{% if line.highlight %}background-color: lightgrey{% endif %}">{{ line.content }}</code></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <p><strong>{{ call.template_info.name|default:"(unknown)" }}</strong></p>
+                    {% endif %}
+                </div>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
