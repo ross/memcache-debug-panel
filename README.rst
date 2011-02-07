@@ -35,21 +35,21 @@ Configuration
 
 #. Add the memcache or pylibmc panel to DEBUG_TOOLBAR_PANELS
 
-    You'll need to add the panel corresponding to the library you'll be using to
-    the list of debug toolbar's panels in the order in which you'd like it to
-    appear.
+   You'll need to add the panel corresponding to the library you'll be using to
+   the list of debug toolbar's panels in the order in which you'd like it to
+   appear.
 
-	DEBUG_TOOLBAR_PANELS = (
-	    'debug_toolbar.panels.version.VersionDebugPanel',
-	    'debug_toolbar.panels.timer.TimerDebugPanel',
-	    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-	    'debug_toolbar.panels.headers.HeaderDebugPanel',
-	    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-	    'debug_toolbar.panels.template.TemplateDebugPanel',
-	    'debug_toolbar.panels.sql.SQLDebugPanel',
-	    'debug_toolbar.panels.signals.SignalDebugPanel',
-	    'debug_toolbar.panels.logger.LoggingPanel',
-            'memcache_toolbar.panels.memcache.MemcachePanel',
-            # if you use pyibmc you'd include it's panel instead
-            #'memcache_toolbar.panels.pylibmc.PylibmcPanel',
-	)
+      DEBUG_TOOLBAR_PANELS = (
+         'debug_toolbar.panels.version.VersionDebugPanel',
+         'debug_toolbar.panels.timer.TimerDebugPanel',
+         'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+         'debug_toolbar.panels.headers.HeaderDebugPanel',
+         'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+         'debug_toolbar.panels.template.TemplateDebugPanel',
+         'debug_toolbar.panels.sql.SQLDebugPanel',
+         'debug_toolbar.panels.signals.SignalDebugPanel',
+         'debug_toolbar.panels.logger.LoggingPanel',
+         'memcache_toolbar.panels.memcache.MemcachePanel',
+         # if you use pyibmc you'd include it's panel instead
+         #'memcache_toolbar.panels.pylibmc.PylibmcPanel',
+      )
