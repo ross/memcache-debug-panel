@@ -1,15 +1,12 @@
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
-import memcache
-#import pylibmc
+from django.core.cache import cache
 
 def index(request, **kwargs):
-    client = memcache.Client(['127.0.0.1:11211'], debug=False)
-    #client = pylibmc.Client(['127.0.0.1'], binary=True)
-    client.get('key')
-    client.get('key2')
+    cache.get('key')
+    cache.get('key2')
     try:
-        client.incr('hello')
+        cache.incr('hello')
     except:
         pass
     return render_to_response('demo/index.html')
