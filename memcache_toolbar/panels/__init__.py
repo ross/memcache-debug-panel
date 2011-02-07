@@ -3,8 +3,14 @@ from __future__ import absolute_import
 
 from datetime import datetime
 from debug_toolbar.panels import DebugPanel
+from django.conf import settings
 from django.template.loader import render_to_string
+from os.path import dirname, realpath
+import django
 import logging
+import SocketServer
+import traceback
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +36,27 @@ class Calls:
 # NOTE this is not even close to thread-safe/aware
 instance = Calls()
 
+# based on the function with the same name in ddt's sql, i'd rather just use it
+# than copy it, but i can't import it without things blowing up
+django_path = realpath(dirname(django.__file__))
+socketserver_path = realpath(dirname(SocketServer.__file__))
+def tidy_stacktrace(strace):
+    trace = []
+    for s in strace[:-1]:
+        s_path = realpath(s[0])
+        if getattr(settings, 'DEBUG_TOOLBAR_CONFIG', {}).get('HIDE_DJANGO_SQL', True) \
+            and django_path in s_path and not 'django/contrib' in s_path:
+            continue
+        if socketserver_path in s_path:
+            continue
+        trace.append((s[0], s[1], s[2], s[3]))
+    return trace
+
 def record(func):
     def recorder(*args, **kwargs):
-        call = {'function': func.__name__, 'args': None, 'exception': False}
+        stacktrace = tidy_stacktrace(traceback.extract_stack())
+        call = {'function': func.__name__, 'args': None, 'exception': False,
+                'stacktrace': stacktrace}
         instance.append(call)
         # the try here is just being extra safe, it should not happen
         try:
