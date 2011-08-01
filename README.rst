@@ -15,7 +15,7 @@ Installation
 
 	https://github.com/robhudson/django-debug-toolbar
 
-#. Add the `memcache_toolbar` directory to your Python path.
+#. Add the `memcache_toolbar` app to your INSTALLED_APPS.
 
 #. import the panel corresponding to the library you're using
 

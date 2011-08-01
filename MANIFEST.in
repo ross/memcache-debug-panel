@@ -1,0 +1,1 @@
+recursive-include memcache_toolbar/templates *
