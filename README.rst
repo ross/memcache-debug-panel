@@ -15,7 +15,7 @@ Installation
 
 #. Add the ``memcache_toolbar`` app to your ``INSTALLED_APPS``.
 
-#. import the panel corresponding to the library you're using
+#. Import the panel corresponding to the library you're using.
 
    The following must be imported in your ``settings.py`` file so that it has a
    chance to replace the caching library with one capable of tracking. You'll
@@ -40,16 +40,8 @@ Configuration
    appear::
 
 	DEBUG_TOOLBAR_PANELS = (
-	    'debug_toolbar.panels.version.VersionDebugPanel',
-	    'debug_toolbar.panels.timer.TimerDebugPanel',
-	    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-	    'debug_toolbar.panels.headers.HeaderDebugPanel',
-	    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-	    'debug_toolbar.panels.template.TemplateDebugPanel',
-	    'debug_toolbar.panels.sql.SQLDebugPanel',
-	    'debug_toolbar.panels.signals.SignalDebugPanel',
-	    'debug_toolbar.panels.logger.LoggingPanel',
+            ...
 	    'memcache_toolbar.panels.memcache.MemcachePanel',
-	    # if you use pyibmc you'd include it's panel instead
-	    #'memcache_toolbar.panels.pylibmc.PylibmcPanel',
+	    # if you use pylibmc you'd include its panel instead
+	    # 'memcache_toolbar.panels.pylibmc.PylibmcPanel',
 	)
