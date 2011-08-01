@@ -11,7 +11,7 @@ projects. Feedback welcome, patches appreciated. - Ross McFarland
 Installation
 ============
 
-#. Install and configure ```django-debug-toolbar`` <https://github.com/django-debug-toolbar/django-debug-toolbar>`_.
+#. Install and configure `Django Debug Toolbar <https://github.com/django-debug-toolbar/django-debug-toolbar>`_.
 
 #. Add the ``memcache_toolbar`` app to your ``INSTALLED_APPS``.
 
@@ -37,9 +37,8 @@ Configuration
 
    You'll need to add the panel corresponding to the library you'll be using to
    the list of debug toolbar's panels in the order in which you'd like it to
-   appear.
+   appear::
 
-   ::
 	DEBUG_TOOLBAR_PANELS = (
 	    'debug_toolbar.panels.version.VersionDebugPanel',
 	    'debug_toolbar.panels.timer.TimerDebugPanel',
