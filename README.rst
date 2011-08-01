@@ -13,7 +13,7 @@ Installation
 
 #. Install and configure `django-debug-toolbar`
 
-	https://github.com/robhudson/django-debug-toolbar
+	https://github.com/django-debug-toolbar/django-debug-toolbar
 
 #. Add the `memcache_toolbar` app to your `INSTALLED_APPS`.
 
