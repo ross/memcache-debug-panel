@@ -55,7 +55,10 @@ def tidy_stacktrace(strace):
 
 def record(func):
     def recorder(*args, **kwargs):
-        stacktrace = tidy_stacktrace(traceback.extract_stack())
+        if getattr(settings, 'DEBUG_TOOLBAR_CONFIG', {}).get('ENABLE_STACKTRACES', True):
+            stacktrace = tidy_stacktrace(traceback.extract_stack())
+        else:
+            stacktrace = []
         call = {'function': func.__name__, 'args': None, 
                 'stacktrace': stacktrace}
         instance.append(call)
