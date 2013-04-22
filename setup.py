@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='memcache_toolbar',
-    version='0.5.4',
+    version='0.5.5',
     description='',
     author='Ross McFarland',
     author_email='rwmcfa1@neces.com',
