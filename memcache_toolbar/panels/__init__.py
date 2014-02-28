@@ -93,9 +93,11 @@ class BasePanel(Panel):
     def process_request(self, request):
         instance.reset()
 
+    @property
     def nav_title(self):
         return _('Memcache')
 
+    @property
     def nav_subtitle(self):
         duration = 0
         calls = instance.calls()
@@ -107,24 +109,30 @@ class BasePanel(Panel):
         else:
             return "0 calls"
 
+    @property
     def title(self):
         return _('Memcache Calls')
 
+    @property
     def url(self):
         return ''
 
+    @property
+    def template(self):
+        return 'memcache_toolbar/panels/memcache.html'
+
+    @property
     def content(self):
         duration = 0
         calls = instance.calls()
         for call in calls:
             duration += call['duration']
 
-        context = self.context.copy()
-        context.update({
+        context = {
             'calls': calls,
             'count': len(calls),
             'duration': duration,
-        })
+        }
 
-        return render_to_string('memcache_toolbar/panels/memcache.html',
+        return render_to_string(self.template,
                 context)
