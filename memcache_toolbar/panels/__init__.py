@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-from debug_toolbar.panels import DebugPanel
+from debug_toolbar.panels import Panel
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
@@ -86,7 +86,7 @@ def record(func):
     return recorder
 
 
-class BasePanel(DebugPanel):
+class BasePanel(Panel):
     name = 'Memcache'
     has_content = True
 
