@@ -55,10 +55,12 @@ def tidy_stacktrace(strace):
 
 def record(func):
     def recorder(*args, **kwargs):
-        stacktrace = tidy_stacktrace(traceback.extract_stack())
-        call = {'function': func.__name__, 'args': None, 
+        if getattr(settings, 'DEBUG_TOOLBAR_CONFIG', {}).get('ENABLE_STACKTRACES', True):
+            stacktrace = tidy_stacktrace(traceback.extract_stack())
+        else:
+            stacktrace = []
+        call = {'function': func.__name__, 'args': None,
                 'stacktrace': stacktrace}
-        instance.append(call)
         # the try here is just being extra safe, it should not happen
         try:
             a = None
@@ -82,6 +84,7 @@ def record(func):
             # the clock stops now
             dur = datetime.now() - call['start']
             call['duration'] = (dur.seconds * 1000) + (dur.microseconds / 1000.0)
+            instance.append(call)
         return ret
     return recorder
 
