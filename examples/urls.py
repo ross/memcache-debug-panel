@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^', include('examples.demo.urls')),
 )

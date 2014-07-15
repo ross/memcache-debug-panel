@@ -90,6 +90,7 @@ try:
             return _pylibmc.client.set_behaviors(self, behaviors)
 
         behaviors = property(get_behaviors, set_behaviors)
+
         @property
         def behaviours(self):
             raise AttributeError("nobody uses british spellings")

@@ -15,6 +15,7 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
+
 class Calls:
     def __init__(self):
         self.reset()
@@ -41,21 +42,26 @@ instance = Calls()
 # than copy it, but i can't import it without things blowing up
 django_path = realpath(dirname(django.__file__))
 socketserver_path = realpath(dirname(SocketServer.__file__))
+
+
 def tidy_stacktrace(strace):
     trace = []
     for s in strace[:-1]:
         s_path = realpath(s[0])
-        if getattr(settings, 'DEBUG_TOOLBAR_CONFIG', {}).get('HIDE_DJANGO_SQL', True) \
-            and django_path in s_path and not 'django/contrib' in s_path:
+        if getattr(settings, 'DEBUG_TOOLBAR_CONFIG', {}).get(
+            'HIDE_DJANGO_SQL', True) \
+                and django_path in s_path and not 'django/contrib' in s_path:
             continue
         if socketserver_path in s_path:
             continue
         trace.append((s[0], s[1], s[2], s[3]))
     return trace
 
+
 def record(func):
     def recorder(*args, **kwargs):
-        if getattr(settings, 'DEBUG_TOOLBAR_CONFIG', {}).get('ENABLE_STACKTRACES', True):
+        if getattr(settings, 'DEBUG_TOOLBAR_CONFIG', {}).get(
+                'ENABLE_STACKTRACES', True):
             stacktrace = tidy_stacktrace(traceback.extract_stack())
         else:
             stacktrace = []
@@ -137,5 +143,4 @@ class BasePanel(Panel):
             'duration': duration,
         }
 
-        return render_to_string(self.template,
-                context)
+        return render_to_string(self.template, context)

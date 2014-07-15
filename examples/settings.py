@@ -50,7 +50,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'examples.urls'
 
 TEMPLATE_DIRS = (
-        join(dirname(__file__), 'templates')
+    join(dirname(__file__), 'templates')
 )
 
 INSTALLED_APPS = (
